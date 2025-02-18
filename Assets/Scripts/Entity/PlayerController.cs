@@ -30,5 +30,8 @@ public class PlayerController : BaseController
         {
             lookDirection = lookDirection.normalized;
         }
+
+        // BaseController(부모 클래스)에서 사용할 isAttacking 변수 값 설정
+        isAttacking = Input.GetMouseButton(0);
     }
 }

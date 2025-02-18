@@ -22,11 +22,24 @@ public class BaseController : MonoBehaviour
     protected AnimationHandler animationHandler;    // 애니메이션
     protected StatHandler statHandler;      // 스탯
 
+    [SerializeField] public WeaponHandler WeaponPrefab;     // 무기 프리팹
+    protected WeaponHandler weaponHandler;  // 무기 장착을 위한 핸들러
+
+    protected bool isAttacking;
+    private float timeSinceLastAttack = float.MaxValue;
+
+
     protected virtual void Awake()
     {
         _rigidbody = GetComponent<Rigidbody2D>();
         animationHandler = GetComponent<AnimationHandler>();    // 애니메이션
         statHandler = GetComponent<StatHandler>();  // 스탯
+
+        // 무기 장착
+        if (WeaponPrefab != null)
+            weaponHandler = Instantiate(WeaponPrefab, weaponPivot); // 무기 피벗에 프리팹을 복사해서 생성한다
+        else
+            weaponHandler = GetComponentInChildren<WeaponHandler>();    // 이미 무기 장착 시, 찾아온다
     }
 
     protected virtual void Start()
@@ -38,6 +51,8 @@ public class BaseController : MonoBehaviour
     {
         HandleAction(); // 입력처리, 이동에 필요한 데이터 처리
         Rotate(lookDirection);  // 회전
+
+        HandleAttackDelay();
     }
 
     protected virtual void FixedUpdate()
@@ -82,6 +97,9 @@ public class BaseController : MonoBehaviour
             // Quaternion.Euler의 매개변수로 deg값 사용
             weaponPivot.rotation = Quaternion.Euler(0, 0, rotZ);
         }
+
+        // 무기 장착 관련
+        weaponHandler?.Rotate(isLeft);  // 무기 회전
     }
 
     public void ApplyKnockback(Transform other, float power, float duration)
@@ -89,5 +107,30 @@ public class BaseController : MonoBehaviour
         knockbackDuration = duration;
         knockback = -(other.position - transform.position).normalized * power;
         // 벡터의 뺼셈이다 A-B: B가 A를 바라보는 벡터
+    }
+
+    private void HandleAttackDelay()
+    {
+        if (weaponHandler == null)
+            return;
+
+        // 공격 딜레이
+        if (timeSinceLastAttack <= weaponHandler.Delay)
+        {
+            timeSinceLastAttack += Time.deltaTime;
+        }
+
+        // 딜레이가 다 되었으면 공격
+        if (isAttacking && timeSinceLastAttack > weaponHandler.Delay)
+        {
+            timeSinceLastAttack = 0;
+            Attack();
+        }
+    }
+
+    protected virtual void Attack()
+    {
+        if (lookDirection != Vector2.zero)
+            weaponHandler?.Attack();
     }
 }
