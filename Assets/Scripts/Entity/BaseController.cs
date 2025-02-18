@@ -19,13 +19,14 @@ public class BaseController : MonoBehaviour
     private Vector2 knockback = Vector2.zero;
     private float knockbackDuration = 0.0f;
 
-    protected AnimationHandler animationHandler;
-
+    protected AnimationHandler animationHandler;    // 애니메이션
+    protected StatHandler statHandler;      // 스탯
 
     protected virtual void Awake()
     {
         _rigidbody = GetComponent<Rigidbody2D>();
-        animationHandler = GetComponent<AnimationHandler>();
+        animationHandler = GetComponent<AnimationHandler>();    // 애니메이션
+        statHandler = GetComponent<StatHandler>();  // 스탯
     }
 
     protected virtual void Start()
@@ -55,7 +56,8 @@ public class BaseController : MonoBehaviour
 
     private void Movment(Vector2 direction)
     {
-        direction = direction * 5;
+        //direction = direction * 5;
+        direction = direction * statHandler.Speed;  // 스탯에 의한 속도 변화
         if (knockbackDuration > 0.0f)
         {
             direction *= 0.2f;
@@ -64,7 +66,7 @@ public class BaseController : MonoBehaviour
 
         _rigidbody.velocity = direction;
 
-        animationHandler.Move(direction);
+        animationHandler.Move(direction);   // 이동 애니메이션
     }
 
     private void Rotate(Vector2 direction)
