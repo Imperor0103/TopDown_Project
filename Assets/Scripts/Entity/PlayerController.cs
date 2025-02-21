@@ -4,11 +4,19 @@ using UnityEngine;
 
 public class PlayerController : BaseController
 {
+    private GameManager gameManager;
     private Camera camera;
 
-    protected override void Start()
+    //protected override void Start()
+    //{
+    //    base.Start();
+    //    camera = Camera.main;
+    //}
+
+    // Start로 Player를 초기화 한 것을 GameManager가 초기화될 때 Player를 초기화하는 방식으로 바꾸었다
+    public void Init(GameManager gameManager)
     {
-        base.Start();
+        this.gameManager = gameManager;
         camera = Camera.main;
     }
 

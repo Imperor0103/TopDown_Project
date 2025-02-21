@@ -22,8 +22,23 @@ public class EnemyManager : MonoBehaviour
     [SerializeField] private float timeBetweenSpawns = 0.2f;
     [SerializeField] private float timeBetweenWaves = 1f;
 
+    GameManager gameManager;
+
+    // GameManager가 Player 뿐 아니라 EnemyManager도 컨트롤한다
+    public void Init(GameManager gameManager)
+    {
+        this.gameManager = gameManager;
+    }
+
+
     public void StartWave(int waveCount)
     {
+        if (waveCount <= 0)
+        {
+            gameManager.EndOfWave();    // 웨이브가 끝나면, 다음 웨이브 시작
+            return;
+        }
+
         if (waveRoutine != null)
             StopCoroutine(waveRoutine);
         waveRoutine = StartCoroutine(SpawnWave(waveCount));
@@ -90,11 +105,14 @@ public class EnemyManager : MonoBehaviour
         }
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            StartWave(1);
-        }
-    }
+    // 테스트코드
+    //private void Update()
+    //{
+    //    if (Input.GetKeyDown(KeyCode.Space))
+    //    {
+    //        StartWave(1);
+    //    }
+    //}
+
+
 }
