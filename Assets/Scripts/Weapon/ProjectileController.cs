@@ -51,15 +51,32 @@ public class ProjectileController : MonoBehaviour
         // collision.gameObject.layer: 충돌한 오브젝트의 layer
         // 이를 시프트연산하여 OR 또는 AND (여기서는 OR) 충돌한것인지 판단한다
 
-        // 벽면과 충돌
+        // 벽면과 충돌 -> 화살 삭제
         if (levelCollisionLayer.value == (levelCollisionLayer.value | (1 << collision.gameObject.layer)))   // 시프트연산
         {
             DestroyProjectile(collision.ClosestPoint(transform.position) - direction * .2f, fxOnDestory);
         }
 
-        // target과 충돌
+        // target과 충돌 -> 충돌한 오브젝트의 데미지와 넉백 처리
         else if (rangeWeaponHandler.target.value == (rangeWeaponHandler.target.value | (1 << collision.gameObject.layer)))
         {
+            // Entity(생명체)들은 ResourceController를 가지고 있어서 
+            // ResourceController를 통해 체력 관리
+            ResourceController resourceController = collision.GetComponent<ResourceController>();
+            if (resourceController != null)
+            {
+                resourceController.ChangeHealth(-rangeWeaponHandler.Power);
+                // KnockBack(뒤로 밀려남)이 켜져있다면, 그것또한 처리한다
+                if (rangeWeaponHandler.IsOnKnockback)
+                {
+                    BaseController controller = collision.GetComponent<BaseController>();
+                    if (controller != null)
+                    {
+                        controller.ApplyKnockback(transform, rangeWeaponHandler.KnockbackPower, rangeWeaponHandler.KnockbackTime);
+                    }
+                }
+            }
+
             DestroyProjectile(collision.ClosestPoint(transform.position), fxOnDestory);
         }
     }

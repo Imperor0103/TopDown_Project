@@ -70,4 +70,13 @@ public class EnemyController : BaseController
     {
         return (target.position - transform.position).normalized;
     }
+
+    public override void Death()
+    {
+        // BaseController에서 처리하면 플레이어의 죽음도 처리하므로
+        // 이를 막기위해 EnemyController에서 override해 사용
+        base.Death();
+        // enemy가 사망하면 EnemyManager에 호출
+        enemyManager.RemoveEnemyOnDeath(this);
+    }
 }

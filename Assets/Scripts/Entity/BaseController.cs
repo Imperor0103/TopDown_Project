@@ -133,4 +133,27 @@ public class BaseController : MonoBehaviour
         if (lookDirection != Vector2.zero)
             weaponHandler?.Attack();
     }
+
+    // BaseController는 PlayerController 또는 EnemyController로부터 누가 죽었는지 정보를 받는다(처리는 ResourceController에서)
+    public virtual void Death()
+    {
+        _rigidbody.velocity = Vector3.zero;
+
+        // 하위에 있는 모든 스프라이트를 찾아온다
+        foreach (SpriteRenderer renderer in transform.GetComponentsInChildren<SpriteRenderer>())
+        {
+            Color color = renderer.color;
+            color.a = 0.3f; // 알파값 수정
+            renderer.color = color;
+        }
+
+
+        foreach (Behaviour component in transform.GetComponentsInChildren<Behaviour>())
+        {
+            /// 코드가 동작하지 않도록 모두 끄는 작업
+            component.enabled = false;
+        }
+
+        Destroy(gameObject, 2f);
+    }
 }

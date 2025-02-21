@@ -83,10 +83,15 @@ public class EnemyManager : MonoBehaviour
             Random.Range(randomArea.xMin, randomArea.xMax),
             Random.Range(randomArea.yMin, randomArea.yMax)
         );
-
         /// 적 생성 및 리스트에 추가
         GameObject spawnedEnemy = Instantiate(randomPrefab, new Vector3(randomPosition.x, randomPosition.y), Quaternion.identity);
         EnemyController enemyController = spawnedEnemy.GetComponent<EnemyController>();
+
+
+        // RemoveEnemyOnDeath에서 모든 적이 제거가되면 Wave가 끝났다
+        // 이를 EnemyManager가 알고 있어야한다
+        // EnemyControll를 초기화
+        enemyController.Init(this, gameManager.player.transform);
 
         activeEnemies.Add(enemyController);
     }
@@ -115,4 +120,13 @@ public class EnemyManager : MonoBehaviour
     //}
 
 
+    public void RemoveEnemyOnDeath(EnemyController enemy)
+    {
+        // 죽은 Enemy는 리스트에서 제거
+        activeEnemies.Remove(enemy);
+        // EnemySpawn이 완료가 되었고, 남은 Enemy가 없다면 해당 Wave는 완료
+        /// 이 작업을 하려면 EnemyController가 EnemyManager를 알고 있어야 한다
+        if (enemySpawnComplite && activeEnemies.Count == 0)
+            gameManager.EndOfWave();    
+    }
 }

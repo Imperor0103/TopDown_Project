@@ -67,8 +67,10 @@ public class ResourceController : MonoBehaviour
         return true;
     }
 
+    // PlayerController, EnemyController 에서 사망처리하면 ResourceController에서 사망판정
     private void Death()
     {
-
+        // BaseController는 누가 죽었는지 알고 있다
+        baseController.Death();
     }
 }
