@@ -124,6 +124,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   healthChangeDelay: 0.5
+  damageClip: {fileID: 8300000, guid: 591e932bed79ce44fa639e6b55c61ac9, type: 3}
 --- !u!114 &8453126010623367011
 MonoBehaviour:
   m_ObjectHideFlags: 0

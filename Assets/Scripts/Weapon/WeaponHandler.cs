@@ -40,6 +40,10 @@ public class WeaponHandler : MonoBehaviour
     private Animator animator;
     private SpriteRenderer weaponRenderer;
 
+    // 무기에 쓸 사운드 클립 저장
+    public AudioClip attackSoundClip;
+
+
     protected virtual void Awake()
     {        
         Controller = GetComponentInParent<BaseController>();    // 부모한테서 찾는 이유: 무기는 캐릭터의 하위에 생길 것이기 때문
@@ -59,6 +63,10 @@ public class WeaponHandler : MonoBehaviour
     {
         // 공격 애니메이션 실행
         AttackAnimation();
+
+        // 무기 소리 
+        if (attackSoundClip != null)
+            SoundManager.PlayClip(attackSoundClip);
     }
 
     public void AttackAnimation()
