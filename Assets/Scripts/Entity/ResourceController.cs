@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -18,6 +19,10 @@ public class ResourceController : MonoBehaviour
 
     public AudioClip damageClip;   // 피격 사운드 
 
+    /// <summary>
+    /// delegate를 활용한 이벤트 호출
+    /// </summary>
+    private Action<float, float> OnChangeHealth;
 
     private void Awake()
     {
@@ -57,6 +62,10 @@ public class ResourceController : MonoBehaviour
         CurrentHealth = CurrentHealth > MaxHealth ? MaxHealth : CurrentHealth;  // 체력 Max
         CurrentHealth = CurrentHealth < 0 ? 0 : CurrentHealth;  // 체력 Min
 
+        // HP 변화량이 생겼을 때 호출
+        /// OnChangeHealth delegate에 연결된 메서드가 있다면, CurrentHealth와 MaxHealth 메서드를 매개변수로 전달해서 호출한다
+        OnChangeHealth?.Invoke(CurrentHealth, MaxHealth);
+
         if (change < 0)
         {
             animationHandler.Damage();  // 데미지 받는다
@@ -79,5 +88,24 @@ public class ResourceController : MonoBehaviour
     {
         // BaseController는 누가 죽었는지 알고 있다
         baseController.Death();
+    }
+
+    /// <summary>
+    /// float 2개를 받는 Action을 매개변수로 받는다
+    /// </summary>
+    /// <param name="action"></param>
+    public void AddHealthChangeEvent(Action<float, float> action)
+    {
+        OnChangeHealth += action;
+        /// 위에서 OnChangeHealth delegate에 등록한 action은
+        /// HP가 변화될때마다 ChangeHealth에서 
+        /// OnChangeHealth?.Invoke(CurrentHealth, MaxHealth); 으로 호출된다
+    }
+    public void RemoveHealthChangeEvent(Action<float, float> action)
+    {
+        OnChangeHealth -= action;
+        /// 위에서 OnChangeHealth delegate에 등록한 action은
+        /// HP가 변화될때마다 ChangeHealth에서 
+        /// OnChangeHealth?.Invoke(CurrentHealth, MaxHealth); 으로 호출된다
     }
 }
