@@ -17,6 +17,9 @@ public class GameManager : MonoBehaviour
     private UIManager uiManager;
     public static bool isFirstLoading = true;   /// static이므로, Scene을 다시 로드하더라도 값이 남아있다
 
+    // 시네머신
+    private CameraShake cameraShake;
+
     private void Awake()
     {
         instance = this;
@@ -34,6 +37,15 @@ public class GameManager : MonoBehaviour
 
         enemyManager = GetComponentInChildren<EnemyManager>();
         enemyManager.Init(this);
+
+        // 시네머신을 이용한 카메라 흔들기
+        cameraShake = FindObjectOfType<CameraShake>();
+        MainCameraShake();  // 처음 시작하면 흔들린다
+    }
+
+    public void MainCameraShake()
+    {
+        cameraShake.ShakeCamera(1, 1, 1);
     }
 
     private void Start()
