@@ -72,7 +72,9 @@ public class BaseController : MonoBehaviour
     private void Movment(Vector2 direction)
     {
         //direction = direction * 5;
-        direction = direction * statHandler.Speed;  // 스탯에 의한 속도 변화
+        //direction = direction * statHandler.Speed;  // 스탯에 의한 속도 변화
+
+        direction = direction * statHandler.GetStat(StatType.Speed);
         if (knockbackDuration > 0.0f)
         {
             direction *= 0.2f;

@@ -29,11 +29,16 @@ public class RangeWeaponHandler : WeaponHandler
     public Color ProjectileColor { get { return projectileColor; } }
 
 
+    private StatHandler statHandler;
+
+
+
     private ProjectileManager projectileManager;
     protected override void Start()
     {
         base.Start();
         projectileManager = ProjectileManager.Instance;
+        statHandler = GetComponentInParent<StatHandler>();  // StatHandler는 부모인 캐릭터가 가지고 있으므로 부모의 컴포넌트를 가져온다
     }
 
 
@@ -42,13 +47,15 @@ public class RangeWeaponHandler : WeaponHandler
         base.Attack();
 
         float projectilesAngleSpace = multipleProjectilesAngle;  // 각각의 탄의 퍼짐 정도
-        int numberOfProjectilesPerShot = numberofProjectilesPerShot;    // 몇발을 쏠 것인가
+
+        //int numberOfProjectilesPerShot = numberofProjectilesPerShot;    // 몇발을 쏠 것인가
+        int numberOfProjectilePerShot = numberofProjectilesPerShot + (int)statHandler.GetStat(StatType.ProjectileCount);
 
         // 발사해야하는 최소각도 
-        float minAngle = -(numberOfProjectilesPerShot / 2f) * projectilesAngleSpace;
+        float minAngle = -(numberOfProjectilePerShot / 2f) * projectilesAngleSpace;
 
 
-        for (int i = 0; i < numberOfProjectilesPerShot; i++)
+        for (int i = 0; i < numberOfProjectilePerShot; i++)
         {
             float angle = minAngle + projectilesAngleSpace * i;
             float randomSpread = Random.Range(-spread, spread); // 랜덤의 탄 퍼짐을 적용
