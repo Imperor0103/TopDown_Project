@@ -8,6 +8,7 @@ public class EnemyManager : MonoBehaviour
 
     [SerializeField]
     private List<GameObject> enemyPrefabs; // 생성할 적 프리팹 리스트
+    private Dictionary<string, GameObject> enemyPrefabDic;  // 리스트에 있는걸 딕셔너리에 옮긴다
 
     [SerializeField]
     private List<Rect> spawnAreas; // 적을 생성할 영역 리스트
@@ -28,6 +29,12 @@ public class EnemyManager : MonoBehaviour
     public void Init(GameManager gameManager)
     {
         this.gameManager = gameManager;
+
+        enemyPrefabDic = new Dictionary<string, GameObject>();
+        foreach (GameObject prefab in enemyPrefabs)
+        {
+            enemyPrefabDic[prefab.name] = prefab;
+        }
     }
 
 
@@ -64,7 +71,8 @@ public class EnemyManager : MonoBehaviour
         enemySpawnComplite = true;
     }
 
-    private void SpawnRandomEnemy()
+    // 매개변수 default 값을 이용하여 기존의 코드 재사용성을 높인다
+    private void SpawnRandomEnemy(string prefabName = null)
     {
         if (enemyPrefabs.Count == 0 || spawnAreas.Count == 0)
         {
@@ -72,8 +80,18 @@ public class EnemyManager : MonoBehaviour
             return;
         }
 
-        /// 랜덤한 적 프리팹 선택
-        GameObject randomPrefab = enemyPrefabs[Random.Range(0, enemyPrefabs.Count)];
+
+        GameObject randomPrefab;
+        if (prefabName == null)
+        {
+            /// 랜덤한 적 프리팹 선택
+            randomPrefab = enemyPrefabs[Random.Range(0, enemyPrefabs.Count)];
+        }
+        else
+        {
+            randomPrefab = enemyPrefabDic[prefabName];
+        }
+
 
         /// 랜덤한 영역 선택
         Rect randomArea = spawnAreas[Random.Range(0, spawnAreas.Count)];
@@ -127,6 +145,43 @@ public class EnemyManager : MonoBehaviour
         // EnemySpawn이 완료가 되었고, 남은 Enemy가 없다면 해당 Wave는 완료
         /// 이 작업을 하려면 EnemyController가 EnemyManager를 알고 있어야 한다
         if (enemySpawnComplite && activeEnemies.Count == 0)
-            gameManager.EndOfWave();    
+            gameManager.EndOfWave();
     }
+
+    public void StartStage(WaveData waveData)
+    {
+        if (waveRoutine != null)
+            StopCoroutine(waveRoutine);
+
+        waveRoutine = StartCoroutine(SpawnStart(waveData));
+    }
+
+    private IEnumerator SpawnStart(WaveData waveData)
+    {
+        enemySpawnComplite = false;
+        yield return new WaitForSeconds(timeBetweenWaves);
+
+        for (int i = 0; i < waveData.monsters.Length; i++)
+        {
+            yield return new WaitForSeconds(timeBetweenSpawns);
+
+            MonsterSpawnData monsterSpawnData = waveData.monsters[i];
+            for (int j = 0; j < monsterSpawnData.spawnCount; j++)
+            {
+                SpawnRandomEnemy(monsterSpawnData.monsterType);
+            }
+        }
+
+        if (waveData.hasBoss)
+        {
+            yield return new WaitForSeconds(timeBetweenSpawns);
+
+            gameManager.MainCameraShake();
+            SpawnRandomEnemy(waveData.bossType);
+        }
+
+        enemySpawnComplite = true;
+    }
+
+
 }

@@ -20,6 +20,9 @@ public class GameManager : MonoBehaviour
     // 시네머신
     private CameraShake cameraShake;
 
+    // 스테이지
+    [SerializeField] private int currentStageIndex = 0;
+
     private void Awake()
     {
         instance = this;
@@ -89,6 +92,52 @@ public class GameManager : MonoBehaviour
         enemyManager.StopWave();
 
         uiManager.SetGameOver();
+    }
+
+    public void StartStage()
+    {
+        StageInfo stageInfo = GetStageInfo(currentStageIndex);
+
+        if (stageInfo == null)
+        {
+            Debug.Log("스테이지 정보가 없습니다.");
+            return;
+        }
+
+        uiManager.ChangeWave(currentStageIndex + 1);
+
+        enemyManager.StartStage(stageInfo.waves[currentWaveIndex]);
+    }
+
+    public void StartNextWaveInStage()
+    {
+        StageInfo stageInfo = GetStageInfo(currentStageIndex);
+        if (stageInfo.waves.Length - 1 > currentWaveIndex)
+        {
+            currentWaveIndex++;
+            StartStage();   // 다음 웨이브 시작
+        }
+        else
+        {
+            CompleteStage();    // 다음 스테이지
+        }
+    }
+
+    public void CompleteStage()
+    {
+        currentStageIndex++;
+        currentWaveIndex = 0;
+        StartStage();
+    }
+
+
+    private StageInfo GetStageInfo(int stageKey)
+    {
+        foreach (var stage in StageData.Stages)
+        {
+            if (stage.stageKey == stageKey) return stage;
+        }
+        return null;
     }
 
 
