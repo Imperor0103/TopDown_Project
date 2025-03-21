@@ -1,8 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ProjectileController : MonoBehaviour
+public class ProjectileController : MonoBehaviour, IPoolable
 {
     [SerializeField] private LayerMask levelCollisionLayer;
 
@@ -19,7 +20,11 @@ public class ProjectileController : MonoBehaviour
     public bool fxOnDestory = true; // 삭제될 때 이벤트 출력할건지 확인
 
 
-    private ProjectileManager projectileManager;
+    ProjectileManager projectileManager;
+
+    private Action<GameObject> returnToPool;    // 풀에 오브젝트를 보내는 함수를 구독한다
+
+
 
     private void Awake()
     {
@@ -44,6 +49,7 @@ public class ProjectileController : MonoBehaviour
 
         _rigidbody.velocity = direction * rangeWeaponHandler.Speed;
     }
+
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -107,10 +113,29 @@ public class ProjectileController : MonoBehaviour
     {
         if (createFx)
         {
-            // 파티클 생성
-            projectileManager.CreateImpactParticlesAtPostion(position, rangeWeaponHandler);
+            projectileManager.CreateImpactParticlesAtPosition(position, rangeWeaponHandler);
         }
 
-        Destroy(this.gameObject);
+        // Destroy(this.gameObject);
+        OnDespawn();    // 
     }
+
+    public void Initialize(Action<GameObject> returnAction)
+    {
+        // returnToPool에 오브젝트를 풀에 집어넣을 함수를 추가한다
+        returnToPool = returnAction;
+    }
+
+    public void OnSpawn()
+    {
+
+    }
+
+    public void OnDespawn()
+    {
+        // returnToPool에 함수가 있으면 호출하여 오브젝트를 풀에 집어넣는다
+        returnToPool?.Invoke(gameObject);
+    }
+
+
 }

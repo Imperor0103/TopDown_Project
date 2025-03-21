@@ -6087,8 +6087,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e8a0d4dac3d9bd4582b9fe5e09acc36, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentWaveIndex: 0
   currentStageIndex: 0
+  currentWaveIndex: 0
 --- !u!4 &130353708
 Transform:
   m_ObjectHideFlags: 0
@@ -19459,6 +19459,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1143996527}
   - component: {fileID: 1143996528}
+  - component: {fileID: 1143996529}
   m_Layer: 0
   m_Name: ProjectileManager
   m_TagString: Untagged
@@ -19498,6 +19499,21 @@ MonoBehaviour:
   - {fileID: 9103968309324628769, guid: 4bacba243c1507c45b2bb7f18e4d438e, type: 3}
   - {fileID: 2333433672347773180, guid: 8dbb22f304c5f124083f800b7f46d9d8, type: 3}
   impactParticleSystem: {fileID: 995281327}
+--- !u!114 &1143996529
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1143996526}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 814ed52a861adff4ab292fee3f5ae1ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefabs:
+  - {fileID: 9103968309324628769, guid: 4bacba243c1507c45b2bb7f18e4d438e, type: 3}
+  - {fileID: 2333433672347773180, guid: 8dbb22f304c5f124083f800b7f46d9d8, type: 3}
 --- !u!1 &1146596309
 GameObject:
   m_ObjectHideFlags: 0
