@@ -25,6 +25,11 @@ public class EnemyManager : MonoBehaviour
 
     GameManager gameManager;
 
+    /// <summary>
+    /// 생성한 아이템을 알고 있다
+    /// </summary>
+    [SerializeField] private List<GameObject> itemPrefabs;
+
     // GameManager가 Player 뿐 아니라 EnemyManager도 컨트롤한다
     public void Init(GameManager gameManager)
     {
@@ -129,10 +134,19 @@ public class EnemyManager : MonoBehaviour
     {
         // 죽은 Enemy는 리스트에서 제거
         activeEnemies.Remove(enemy);
+
+        /// 아이템을 확률 생성하고싶다면 여기서 랜덤을 추가하면 된다
+        CreateRandomItem(enemy.transform.position);
+
         // EnemySpawn이 완료가 되었고, 남은 Enemy가 없다면 해당 Wave는 완료
         /// 이 작업을 하려면 EnemyController가 EnemyManager를 알고 있어야 한다
         if (enemySpawnComplite && activeEnemies.Count == 0)
             gameManager.EndOfWave();
+    }
+
+    public void CreateRandomItem(Vector3 position)
+    {
+        GameObject item = Instantiate(itemPrefabs[Random.Range(0, itemPrefabs.Count)], position, Quaternion.identity);
     }
 
     public void StartStage(StageInstance stageInstance)

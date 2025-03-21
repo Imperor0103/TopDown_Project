@@ -57,6 +57,29 @@ public class PlayerController : BaseController
         gameManager.GameOver();
     }
 
+    public void UseItem(ItemData item)
+    {
+        foreach (StatEntry modifier in item.statModifiers)
+        {
+            /// item.isTemporary이 true일때만 일시적으로 생성한다
+            /// ModifyStat 내부에 isPermanent가 true로 들어가야 아이템이 삭제된다(즉, 아이템이 일시적으로 생성된다)
+            /// 여기서는 isTemporary를 대입했으므로 false가 들어가야 함
+            statHandler.ModifyStat(modifier.statType, modifier.baseValue, !item.isTemporary, item.duration);
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.TryGetComponent<ItemHandler>(out ItemHandler handler))
+        {
+            if (handler.ItemData == null)
+                return;
+
+            UseItem(handler.ItemData);
+            Destroy(handler.gameObject);
+        }
+    }
+
 
     /// <summary>
     /// 유니티의 Input System을 적용

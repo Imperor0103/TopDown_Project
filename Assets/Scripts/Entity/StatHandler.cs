@@ -47,6 +47,7 @@ public class StatHandler : MonoBehaviour
 
         currentStats[statType] += amount;
 
+        /// isPermanent가 true이면 RemoveStatAfterDuration이 호출되어 스탯 증감 효과가 삭제 
         if (!isPermanent)
         {
             StartCoroutine(RemoveStatAfterDuration(statType, amount, duration));

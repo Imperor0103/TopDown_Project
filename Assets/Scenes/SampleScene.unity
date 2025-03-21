@@ -20072,6 +20072,9 @@ MonoBehaviour:
   gizmoColor: {r: 1, g: 0, b: 0, a: 0.3}
   timeBetweenSpawns: 0.2
   timeBetweenWaves: 1
+  itemPrefabs:
+  - {fileID: 6224474865055872437, guid: b2437e217a05cc349a148e6abc905fff, type: 3}
+  - {fileID: 8504700559359809638, guid: d778b8e35dc04994cabc0785ccf4ab17, type: 3}
 --- !u!4 &1547701730
 Transform:
   m_ObjectHideFlags: 0
