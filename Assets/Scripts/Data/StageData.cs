@@ -77,7 +77,7 @@ public static class StageData
                 new MonsterSpawnData("Goblin",2),
                 new MonsterSpawnData("Goblin",2),
             }
-            ,true,"Orc_Shaman"),    // 보스: Orc_Shaman
+            ,true,"Orc_Shaman"),    // 보스: Orc_Shamanㅂ
         }
         ),
 

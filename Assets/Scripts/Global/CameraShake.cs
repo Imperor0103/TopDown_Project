@@ -12,16 +12,27 @@ public class CameraShake : MonoBehaviour
     private CinemachineBasicMultiChannelPerlin perlin;  // virtualCamera에 추가한 noise
     private float shakeTimeRemaining;   // shake 시간
 
+    bool isInit = false;
+
+
     private void Awake()
+    {
+        if (isInit == false) Init();
+    }
+
+    void Init()
     {
         virtualCamera = GetComponent<CinemachineVirtualCamera>();
 
         /// Noise는 virtualCamera를 통해서 가져와야한다
         perlin = virtualCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+        isInit = true;
     }
 
     public void ShakeCamera(float duration, float amplitude, float frequency)
     {
+        if (isInit == false) Init();
+
         if (shakeTimeRemaining > duration)
             return;
 

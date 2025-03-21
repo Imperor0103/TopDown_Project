@@ -9,6 +9,8 @@ public class GameManager : MonoBehaviour
     public PlayerController player { get; private set; }
     private ResourceController _playerResourceController;
 
+    // 현재 wave, stage 정보(종료 후 시작해도 이어서 하게 만든다)
+    [SerializeField] private int currentStageIndex = 0;
     [SerializeField] private int currentWaveIndex = 0;
 
     private EnemyManager enemyManager;
@@ -20,8 +22,9 @@ public class GameManager : MonoBehaviour
     // 시네머신
     private CameraShake cameraShake;
 
-    // 스테이지
-    [SerializeField] private int currentStageIndex = 0;
+
+    // 현재 스테이지 정보
+    private StageInstance currentStageInstance;
 
     private void Awake()
     {
@@ -68,7 +71,9 @@ public class GameManager : MonoBehaviour
     public void StartGame()
     {
         uiManager.SetPlayGame();
-        StartNextWave();
+        // StartNextWave();
+        // StartStage();
+        LoadOrStartNewStage();
     }
 
     void StartNextWave()
@@ -84,38 +89,65 @@ public class GameManager : MonoBehaviour
 
     public void EndOfWave()
     {
-        StartNextWave();    // 다음 웨이브 시작
+        // StartNextWave();
+        StartNextWaveInStage();
     }
 
     public void GameOver()
     {
         enemyManager.StopWave();
-
         uiManager.SetGameOver();
+        StageSaveManager.ClearSavedStage();         // 게임오버하면 저장정보를 날린다
     }
 
-    public void StartStage()
+    private void LoadOrStartNewStage()
     {
-        StageInfo stageInfo = GetStageInfo(currentStageIndex);
+        // 세이브데이터
+        StageInstance savedInstance = StageSaveManager.LoadStageInstance();
+
+        if (savedInstance != null)
+        {
+            currentStageInstance = savedInstance;   // 세이브데이터를 로드
+        }
+        else
+        {
+            currentStageInstance = new StageInstance(0, 0); // 새로 시작
+        }
+
+        StartStage(currentStageInstance);
+    }
+
+    public void StartStage(StageInstance stageInstance)
+    {
+        currentStageIndex = stageInstance.stageKey;
+        currentWaveIndex = stageInstance.currentWave;
+
+        StageInfo stageInfo = GetStageInfo(stageInstance.stageKey);
 
         if (stageInfo == null)
         {
             Debug.Log("스테이지 정보가 없습니다.");
+            StageSaveManager.ClearSavedStage();
+            currentStageInstance = null;
             return;
         }
-
+        // stageInstance에 지금 플레이하는 stage 정보를 저장
+        stageInstance.SetStageInfo(stageInfo);
+        // 세팅 
         uiManager.ChangeWave(currentStageIndex + 1);
-
-        enemyManager.StartStage(stageInfo.waves[currentWaveIndex]);
+        enemyManager.StartStage(currentStageInstance);
+        /// wave가 하나 시작할때마다 저장
+        StageSaveManager.SaveStageInstance(currentStageInstance);
     }
 
     public void StartNextWaveInStage()
     {
-        StageInfo stageInfo = GetStageInfo(currentStageIndex);
-        if (stageInfo.waves.Length - 1 > currentWaveIndex)
+        //StageInfo stageInfo = GetStageInfo(currentStageIndex);
+        //if (stageInfo.waves.Length - 1 > currentWaveIndex)
+        if (currentStageInstance.CheckEndOfWave())
         {
-            currentWaveIndex++;
-            StartStage();   // 다음 웨이브 시작
+            currentStageInstance.currentWave++;
+            StartStage(currentStageInstance);   // 다음 웨이브 시작
         }
         else
         {
@@ -125,9 +157,20 @@ public class GameManager : MonoBehaviour
 
     public void CompleteStage()
     {
-        currentStageIndex++;
-        currentWaveIndex = 0;
-        StartStage();
+        // 데이터 저장한거 날리고
+        StageSaveManager.ClearSavedStage();
+
+        if (currentStageInstance == null)
+            return;
+
+        //currentStageIndex++;
+        //currentWaveIndex = 0;
+
+        // 스테이지 하나 증가
+        currentStageInstance.stageKey += 1;
+        currentStageInstance.currentWave = 0;
+
+        StartStage(currentStageInstance);
     }
 
 
@@ -139,14 +182,4 @@ public class GameManager : MonoBehaviour
         }
         return null;
     }
-
-
-    // 테스트 코드   
-    //private void Update()
-    //{
-    //    if (Input.GetKeyDown(KeyCode.Space))
-    //    {
-    //        StartGame();
-    //    }
-    //}
 }

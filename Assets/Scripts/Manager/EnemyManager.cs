@@ -37,7 +37,6 @@ public class EnemyManager : MonoBehaviour
         }
     }
 
-
     public void StartWave(int waveCount)
     {
         if (waveCount <= 0)
@@ -80,7 +79,6 @@ public class EnemyManager : MonoBehaviour
             return;
         }
 
-
         GameObject randomPrefab;
         if (prefabName == null)
         {
@@ -91,7 +89,6 @@ public class EnemyManager : MonoBehaviour
         {
             randomPrefab = enemyPrefabDic[prefabName];
         }
-
 
         /// 랜덤한 영역 선택
         Rect randomArea = spawnAreas[Random.Range(0, spawnAreas.Count)];
@@ -128,16 +125,6 @@ public class EnemyManager : MonoBehaviour
         }
     }
 
-    // 테스트코드
-    //private void Update()
-    //{
-    //    if (Input.GetKeyDown(KeyCode.Space))
-    //    {
-    //        StartWave(1);
-    //    }
-    //}
-
-
     public void RemoveEnemyOnDeath(EnemyController enemy)
     {
         // 죽은 Enemy는 리스트에서 제거
@@ -148,18 +135,20 @@ public class EnemyManager : MonoBehaviour
             gameManager.EndOfWave();
     }
 
-    public void StartStage(WaveData waveData)
+    public void StartStage(StageInstance stageInstance)
     {
         if (waveRoutine != null)
             StopCoroutine(waveRoutine);
 
-        waveRoutine = StartCoroutine(SpawnStart(waveData));
+        waveRoutine = StartCoroutine(SpawnStart(stageInstance));
     }
 
-    private IEnumerator SpawnStart(WaveData waveData)
+    private IEnumerator SpawnStart(StageInstance stageInstance)
     {
         enemySpawnComplite = false;
         yield return new WaitForSeconds(timeBetweenWaves);
+
+        WaveData waveData = stageInstance.currentStageInfo.waves[stageInstance.currentWave];
 
         for (int i = 0; i < waveData.monsters.Length; i++)
         {
@@ -182,6 +171,4 @@ public class EnemyManager : MonoBehaviour
 
         enemySpawnComplite = true;
     }
-
-
 }
